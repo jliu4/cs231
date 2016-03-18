@@ -7,8 +7,7 @@ class LinearClassifier(object):
   def __init__(self):
     self.W = None
 
-  def train(self, X, y, learning_rate=1e-3, reg=1e-5, num_iters=100,
-            batch_size=200, verbose=False):
+  def train(self, X, y, learning_rate=1e-3, reg=1e-5, num_iters=100,  batch_size=200, verbose=False):
     """
     Train this linear classifier using stochastic gradient descent.
 
@@ -35,9 +34,13 @@ class LinearClassifier(object):
     # Run stochastic gradient descent to optimize W
     loss_history = []
     for it in xrange(num_iters):
-      h_idx = np.random.choice(num_train,batch_size)
-      X_batch = X[h_idx]
-      y_batch = y[h_idx]  
+      X_batch = None
+      y_batch = None
+      idx = np.random.choice(num_train, batch_size, replace=True)  
+      X_batch = X[idx,:]
+      y_batch = y[idx]
+   
+      
      
       #########################################################################
       # TODO:                                                                 #
@@ -58,8 +61,8 @@ class LinearClassifier(object):
       # evaluate loss and gradient
       loss, grad = self.loss(X_batch, y_batch, reg)
       loss_history.append(loss)
-      self.W += -learning_rate * grad
-        
+       
+      self.W-=learning_rate * grad
       # perform parameter update
       #########################################################################
       # TODO:                                                                 #
@@ -88,9 +91,9 @@ class LinearClassifier(object):
       array of length N, and each element is an integer giving the predicted
       class.
     """
-    y_pred = np.zeros(X.shape[0]) 
-    scores = X.dot(self.W)  #N,C
-    y_pred = np.argmax(scores, axis=1)
+    y_pred = np.zeros(X.shape[1])
+    scores=self.W.T.dot(X.T)
+    y_pred = np.argmax(scores,axis=0)
     ###########################################################################
     # TODO:                                                                   #
     # Implement this method. Store the predicted labels in y_pred.            #
